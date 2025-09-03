@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV数据比较工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="file"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        textarea {
+            height: 100px;
+            font-family: monospace;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .example {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .example code {
+            background-color: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 CSV数据比较工具</h1>
+        
+        <form action="/data/compare" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="source_csv">源CSV文件:</label>
+                <input type="file" id="source_csv" name="source_csv" accept=".csv" >
+            </div>
+            
+            <div class="form-group">
+                <label for="target_csv">目标CSV文件:</label>
+                <input type="file" id="target_csv" name="target_csv" accept=".csv" >
+            </div>
+            
+            <div class="form-group">
+                <label for="field_mapping">字段映射 (JSON格式):</label>
+                <textarea id="field_mapping" name="field_mapping" placeholder='{"源字段名": "目标字段名"}'></textarea>
+                <div class="example">
+                    <strong>示例:</strong><br>
+                    <code>{"id": "user_id", "name": "full_name", "age": "user_age"}</code><br>
+                    留空则自动使用相同字段名
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="key_fields">关键字段 (JSON格式):</label>
+                <textarea id="key_fields" name="key_fields" placeholder='["字段名1", "字段名2"]' required></textarea>
+                <div class="example">
+                    <strong>示例:</strong><br>
+                    <code>["id"]</code> 或 <code>["id", "name"]</code><br>
+                    用于关联和比较记录
+                </div>
+            </div>
+            
+            <button type="submit">🚀 开始比较</button>
+        </form>
+        
+        <div class="note">
+            <strong>💡 使用说明:</strong><br>
+            1. 上传两个CSV文件进行比较<br>
+            2. 设置字段映射关系（可选）<br>
+            3. 指定关键字段用于记录关联<br>
+            4. 系统将生成Excel报告，包含两个工作表：<br>
+               • <strong>Data_Loss</strong>: 数据丢失记录<br>
+               • <strong>Value_Differences</strong>: 值不匹配的记录<br>
+               • <strong>Summary</strong>: 比较结果摘要
+        </div>
+    </div>
+</body>
+</html> 

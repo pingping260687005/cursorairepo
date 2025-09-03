@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+.vscode
+.DS_Store
+coverage
+.idea
+*.log
+__pycache__
+*.pyc
+*.xlsx

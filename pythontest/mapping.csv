@@ -1,0 +1,6 @@
+source1,source2,desc,is_key
+id,user_id,用户id,yes
+name,full_name,用户姓名,no
+age,user_age,用户年纪,no
+city,location,用户城市,no
+salary,annual_income,用户薪资,no
