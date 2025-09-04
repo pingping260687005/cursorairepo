@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangChain AI 聊天室</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 90vh;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: #007bff;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.ai .message-content {
+            background: #e9ecef;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            margin: 0 10px;
+        }
+
+        .message.user .message-avatar {
+            background: #007bff;
+            color: white;
+            order: 1;
+        }
+
+        .message.ai .message-avatar {
+            background: #6c757d;
+            color: white;
+        }
+
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #007bff;
+        }
+
+        .send-button {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: #0056b3;
+        }
+
+        .send-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .controls {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #5a6268;
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🤖 LangChain AI 助手</h1>
+            <p>基于 LangChain.js 构建的智能聊天机器人</p>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="clearMemory()">🧹 清除记忆</button>
+            <button class="control-btn" onclick="showMemory()">🧠 查看记忆</button>
+            <button class="control-btn" onclick="checkHealth()">💓 检查状态</button>
+            <button class="control-btn" onclick="showMCPTools()">🔧 MCP工具</button>
+            <button class="control-btn" onclick="checkMCPStatus()">🛠️ MCP状态</button>
+        </div>
+
+        <div class="chat-messages" id="messages">
+            <div class="message ai">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    你好！我是基于 LangChain.js 的 AI 助手。我可以记住我们的对话，并为您提供帮助。有什么我可以为您做的吗？
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status">连接就绪</div>
+
+        <div class="chat-input">
+            <div class="input-group">
+                <input type="text" id="messageInput" class="input-field" placeholder="输入您的消息..." onkeypress="handleKeyPress(event)">
+                <button id="sendButton" class="send-button" onclick="sendMessage()">发送</button>
+                <button id="toolsButton" class="send-button" onclick="sendMessageWithTools()" style="background: #28a745;">🔧 工具</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const statusDiv = document.getElementById('status');
+
+        let isLoading = false;
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = isUser ? '👤' : '🤖';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message ai';
+            loadingDiv.id = 'loading-message';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '🤖';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content loading';
+            contentDiv.innerHTML = 'AI 正在思考<span class="loading-dots"></span>';
+            
+            loadingDiv.appendChild(avatar);
+            loadingDiv.appendChild(contentDiv);
+            
+            messagesContainer.appendChild(loadingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideLoading() {
+            const loadingMessage = document.getElementById('loading-message');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+        }
+
+        function setStatus(message, isError = false) {
+            statusDiv.textContent = message;
+            statusDiv.style.color = isError ? '#dc3545' : '#6c757d';
+        }
+
+        async function sendMessage() {
+            if (isLoading) return;
+
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            addMessage(message, true);
+            messageInput.value = '';
+            
+            // 设置加载状态
+            isLoading = true;
+            sendButton.disabled = true;
+            showLoading();
+            setStatus('正在发送消息...');
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message }),
+                });
+
+                const data = await response.json();
+                
+                hideLoading();
+
+                if (data.success) {
+                    addMessage(data.response);
+                    setStatus('消息已发送');
+                } else {
+                    addMessage(`抱歉，发生了错误: ${data.error}`);
+                    setStatus('发送失败', true);
+                }
+
+            } catch (error) {
+                hideLoading();
+                addMessage('抱歉，无法连接到服务器。请检查服务器是否正在运行。');
+                setStatus('连接错误', true);
+                console.error('Error:', error);
+            } finally {
+                isLoading = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        async function clearMemory() {
+            try {
+                setStatus('正在清除记忆...');
+                const response = await fetch('/clear-memory', {
+                    method: 'POST',
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    addMessage('记忆已清除，我们重新开始对话吧！');
+                    setStatus('记忆已清除');
+                } else {
+                    setStatus('清除记忆失败', true);
+                }
+            } catch (error) {
+                setStatus('操作失败', true);
+                console.error('Error:', error);
+            }
+        }
+
+        async function showMemory() {
+            try {
+                setStatus('正在获取记忆...');
+                const response = await fetch('/memory');
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.messages.length === 0) {
+                        addMessage('当前没有对话记忆。');
+                    } else {
+                        addMessage(`当前记忆包含 ${data.messages.length} 条消息。`);
+                    }
+                    setStatus('记忆信息已显示');
+                } else {
+                    setStatus('获取记忆失败', true);
+                }
+            } catch (error) {
+                setStatus('操作失败', true);
+                console.error('Error:', error);
+            }
+        }
+
+        async function checkHealth() {
+            try {
+                setStatus('正在检查服务状态...');
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    addMessage(`✅ 服务状态正常\n应用: ${data.app}\n时间: ${new Date(data.timestamp).toLocaleString()}`);
+                    setStatus('服务状态正常');
+                } else {
+                    setStatus('服务状态异常', true);
+                }
+            } catch (error) {
+                addMessage('❌ 无法连接到服务器');
+                setStatus('连接失败', true);
+                console.error('Error:', error);
+            }
+        }
+
+        // 初始化时检查健康状态
+        window.addEventListener('load', () => {
+            messageInput.focus();
+            checkHealth();
+        });
+
+        // MCP相关功能
+        async function showMCPTools() {
+            try {
+                setStatus('正在获取MCP工具列表...');
+                const response = await fetch('/mcp/tools');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const toolsList = data.tools.map(tool => `• ${tool.name}: ${tool.description}`).join('\n');
+                    addMessage(`🔧 可用MCP工具 (共${data.count}个):\n\n${toolsList}\n\n使用方式：\n- 计算: "请计算2+3*4"\n- 天气: "北京天气怎么样"\n- 搜索: "搜索nodejs教程"`);
+                    setStatus('MCP工具列表已显示');
+                } else {
+                    setStatus('获取MCP工具列表失败', true);
+                }
+            } catch (error) {
+                addMessage('❌ 无法获取MCP工具列表');
+                setStatus('MCP连接失败', true);
+                console.error('Error:', error);
+            }
+        }
+
+        async function checkMCPStatus() {
+            try {
+                setStatus('正在检查MCP状态...');
+                const response = await fetch('/mcp/status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const status = data.status;
+                    let statusText = `🛠️ MCP系统状态:\n\n`;
+                    
+                    if (status.server) {
+                        statusText += `🖥️ 服务器: 运行中 (端口 ${status.server.port})\n`;
+                        statusText += `🔗 客户端: ${status.server.clients} 个连接\n`;
+                    } else {
+                        statusText += `🖥️ 服务器: 未运行\n`;
+                    }
+                    
+                    statusText += `🔧 工具数量: ${status.tools} 个\n`;
+                    statusText += `⚙️ 客户端连接: ${status.client.connected ? '已连接' : '未连接'}`;
+                    
+                    addMessage(statusText);
+                    setStatus('MCP状态已显示');
+                } else {
+                    setStatus('获取MCP状态失败', true);
+                }
+            } catch (error) {
+                addMessage('❌ 无法获取MCP状态');
+                setStatus('MCP连接失败', true);
+                console.error('Error:', error);
+            }
+        }
+
+        // 使用MCP工具增强的聊天
+        async function sendMessageWithTools() {
+            if (isLoading) return;
+
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            addMessage(message, true);
+            messageInput.value = '';
+            
+            // 设置加载状态
+            isLoading = true;
+            sendButton.disabled = true;
+            showLoading();
+            setStatus('正在使用MCP工具处理...');
+
+            try {
+                const response = await fetch('/chat-with-tools', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        message: message,
+                        enableTools: true 
+                    }),
+                });
+
+                const data = await response.json();
+                
+                hideLoading();
+
+                if (data.success) {
+                    let responseText = data.response;
+                    
+                    // 显示使用的工具
+                    if (data.toolsUsed && data.toolsUsed.length > 0) {
+                        const toolsInfo = data.toolsUsed
+                            .filter(t => t.success)
+                            .map(t => t.tool)
+                            .join(', ');
+                        if (toolsInfo) {
+                            responseText += `\n\n🔧 使用了工具: ${toolsInfo}`;
+                        }
+                    }
+                    
+                    addMessage(responseText);
+                    setStatus('消息已处理');
+                } else {
+                    addMessage(`抱歉，发生了错误: ${data.error}`);
+                    setStatus('处理失败', true);
+                }
+
+            } catch (error) {
+                hideLoading();
+                addMessage('抱歉，无法连接到服务器。请检查服务器是否正在运行。');
+                setStatus('连接错误', true);
+                console.error('Error:', error);
+            } finally {
+                isLoading = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+    </script>
+</body>
+</html>

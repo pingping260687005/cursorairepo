@@ -1,0 +1,2 @@
+Hello from MCP SDK!
+这是一个MCP SDK测试文件。

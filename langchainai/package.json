@@ -1,0 +1,34 @@
+{
+  "name": "langchain-ai-app",
+  "version": "1.0.0",
+  "description": "一个基于 LangChain.js 的智能AI应用程序",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "mcp-server": "node mcp-server-sdk.js"
+  },
+  "dependencies": {
+    "langchain": "^0.1.36",
+    "@langchain/openai": "^0.0.28",
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "@modelcontextprotocol/sdk": "^0.4.0",
+    "axios": "^1.6.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "keywords": [
+    "langchain",
+    "ai",
+    "chatbot",
+    "llm",
+    "nodejs"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

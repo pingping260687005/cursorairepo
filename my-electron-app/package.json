@@ -1,0 +1,51 @@
+{
+  "name": "my-electron-app",
+  "version": "1.0.0",
+  "description": "一个简单的 Electron 应用程序",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --config.compression=store",
+    "build:win": "electron-builder --win --config.compression=store",
+    "build:portable": "electron-builder --win portable --config.compression=store",
+    "build:simple": "electron-builder --win dir --config.compression=store",
+    "build:clean": "npm run clean && electron-builder --win portable --config.compression=store",
+    "clean": "rimraf dist && rimraf node_modules/.cache",
+    "dist": "npm run build"
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "build": {
+    "appId": "com.yourname.my-electron-app",
+    "productName": "我的 Electron 应用",
+    "compression": "store",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules",
+      "!dist",
+      "!build",
+      "!.git"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "forceCodeSigning": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

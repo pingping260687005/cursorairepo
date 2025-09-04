@@ -9,32 +9,74 @@ class CSVCompareGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("CSV数据比较工具")
-        self.root.geometry("800x600")
+        self.root.geometry("1024x768")
         
-        # 设置样式
+        # 设置窗口最小尺寸
+        self.root.minsize(800, 600)
+        
+        # 配置主题和样式
         self.style = ttk.Style()
-        self.style.configure("Title.TLabel", font=("Helvetica", 16, "bold"))
+        self.style.theme_use('clam')  # 使用更现代的主题
         
-        # 创建主框架
-        self.main_frame = ttk.Frame(root, padding="10")
+        # 配置全局字体
+        default_font = ("微软雅黑", 11)  # 使用微软雅黑作为默认字体，调大到11号
+        title_font = ("微软雅黑", 24, "bold")  # 标题字体调大到24号
+        button_font = ("微软雅黑", 11)  # 按钮字体
+        heading_font = ("微软雅黑", 12, "bold")  # 表格标题字体
+        self.root.option_add("*Font", default_font)
+        
+        # 配置全局样式
+        self.style.configure(".", font=default_font)
+        self.style.configure("Title.TLabel", font=title_font, foreground="#2c3e50")
+        self.style.configure("Nav.TButton", font=button_font, padding=10)
+        self.style.configure("Action.TButton", 
+                           font=button_font,
+                           padding=(20, 10),
+                           background="#3498db",
+                           foreground="white")
+        self.style.map("Action.TButton",
+                      background=[("active", "#2980b9")])
+        
+        # 设置Treeview样式
+        self.style.configure("Treeview", 
+                           font=default_font,
+                           rowheight=35,  # 增加行高以适应更大的字体
+                           fieldbackground="#f8f9fa",
+                           background="#ffffff")
+        self.style.configure("Treeview.Heading", 
+                           font=heading_font,  # 使用更大的标题字体
+                           background="#f8f9fa")
+        
+        # 设置Notebook样式
+        self.style.configure("TNotebook", padding=5)
+        self.style.configure("TNotebook.Tab", 
+                           padding=(20, 8),  # 增加标签页内边距
+                           font=("微软雅黑", 11, "bold"))  # 标签页字体加粗
+        
+        # 创建主框架，使用更大的内边距
+        self.main_frame = ttk.Frame(root, padding="20")
         self.main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # 标题
+        # 配置主窗口grid权重
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
+        
+        # 标题（去重，仅保留一处）
         title = ttk.Label(self.main_frame, text="CSV数据比较工具", style="Title.TLabel")
-        title.grid(row=0, column=0, columnspan=2, pady=(0, 20))
+        title.grid(row=0, column=0, columnspan=2, pady=(0, 24))
         
         # 创建notebook用于标签页
         self.notebook = ttk.Notebook(self.main_frame)
         self.notebook.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # 创建三个标签页
-        self.mapping_frame = ttk.Frame(self.notebook, padding="10")
-        self.upload_frame = ttk.Frame(self.notebook, padding="10")
-        self.result_frame = ttk.Frame(self.notebook, padding="10")
+        # 创建三个标签页，使用更大的内边距
+        self.mapping_frame = ttk.Frame(self.notebook, padding="20")
+        self.upload_frame = ttk.Frame(self.notebook, padding="20")
+        self.result_frame = ttk.Frame(self.notebook, padding="20")
         
-        self.notebook.add(self.mapping_frame, text="字段映射")
-        self.notebook.add(self.upload_frame, text="文件上传")
-        self.notebook.add(self.result_frame, text="比较结果")
+        self.notebook.add(self.mapping_frame, text="1. 字段映射")
+        self.notebook.add(self.upload_frame, text="2. 文件上传")
+        self.notebook.add(self.result_frame, text="3. 比较结果")
         
         # 初始化各个页面
         self.setup_mapping_page()
@@ -70,21 +112,33 @@ class CSVCompareGUI:
         
         # 按钮区域
         btn_frame = ttk.Frame(self.mapping_frame)
-        ttk.Button(btn_frame, text="添加映射", command=self.add_mapping).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="删除映射", command=self.delete_mapping).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="保存配置", command=self.save_mapping).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame, 
+                  text="➕ 添加映射",
+                  style="Action.TButton",
+                  command=self.add_mapping).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame,
+                  text="🗑 删除映射",
+                  style="Action.TButton",
+                  command=self.delete_mapping).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame,
+                  text="💾 保存配置",
+                  style="Action.TButton",
+                  command=self.save_mapping).pack(side=tk.LEFT, padx=5)
         
         # 关键字段区域
         key_frame = ttk.LabelFrame(self.mapping_frame, text="关键字段", padding="5")
         self.key_field_var = tk.StringVar()
         key_entry = ttk.Entry(key_frame, textvariable=self.key_field_var)
         ttk.Button(key_frame, text="添加关键字段", command=self.add_key_field).pack(side=tk.RIGHT, padx=5)
+        ttk.Button(key_frame, text="删除选中", command=self.delete_selected_key_field).pack(side=tk.RIGHT, padx=5)
         key_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         
         # 关键字段列表
         self.key_listbox = tk.Listbox(key_frame, height=4)
         key_scrollbar = ttk.Scrollbar(key_frame, orient="vertical", command=self.key_listbox.yview)
         self.key_listbox.configure(yscrollcommand=key_scrollbar.set)
+        # 双击删除关键字段
+        self.key_listbox.bind('<Double-1>', lambda e: self.delete_selected_key_field())
         
         # 布局
         self.mapping_tree.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -111,13 +165,23 @@ class CSVCompareGUI:
         ttk.Entry(file2_frame, textvariable=self.file2_var, state="readonly").pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         ttk.Button(file2_frame, text="选择文件", command=lambda: self.select_file("target")).pack(side=tk.RIGHT)
         
+        # 文件上传说明
+        instruction = ttk.Label(self.upload_frame,
+                              text="请选择要比较的CSV文件",
+                              font=("Microsoft YaHei UI", 12, "bold"),
+                              foreground="#2c3e50")
+        
         # 比较按钮
-        compare_btn = ttk.Button(self.upload_frame, text="开始比较", command=self.compare_files)
+        compare_btn = ttk.Button(self.upload_frame,
+                               text="🔍 开始比较",
+                               style="Action.TButton",
+                               command=self.compare_files)
         
         # 布局
+        instruction.pack(pady=(0, 20))
         file1_frame.pack(fill=tk.X, pady=10)
         file2_frame.pack(fill=tk.X, pady=10)
-        compare_btn.pack(pady=20)
+        compare_btn.pack(pady=30)
     
     def setup_result_page(self):
         # 创建结果标签和统计信息区域
@@ -128,13 +192,23 @@ class CSVCompareGUI:
         self.diff_count_label.pack(side=tk.LEFT, padx=5)
         
         # 图例说明
-        legend_frame = ttk.Frame(info_frame)
+        legend_frame = ttk.Frame(info_frame, padding=(5, 5))
         legend_frame.pack(side=tk.RIGHT, padx=5)
         
-        ttk.Label(legend_frame, text="图例：").pack(side=tk.LEFT, padx=5)
-        ttk.Label(legend_frame, text="仅在数据1中", background="#ffcdd2").pack(side=tk.LEFT, padx=5)
-        ttk.Label(legend_frame, text="仅在数据2中", background="#c8e6c9").pack(side=tk.LEFT, padx=5)
-        ttk.Label(legend_frame, text="数据不一致", background="#fff9c4").pack(side=tk.LEFT, padx=5)
+        # 使用更现代的颜色方案
+        legend_style = {"font": ("微软雅黑", 10),
+                       "style": "Legend.TLabel"}
+                       
+        # 配置图例标签样式
+        self.style.configure("Legend.TLabel",
+                           font=("微软雅黑", 10),
+                           background=self.style.lookup("TFrame", "background"))
+        
+        # 创建间隔小一些的图例标签
+        ttk.Label(legend_frame, text="图例说明：", **legend_style).pack(side=tk.LEFT)
+        ttk.Label(legend_frame, text="⬤ 仅在数据1中", foreground="#e74c3c", **legend_style).pack(side=tk.LEFT, padx=(10, 5))
+        ttk.Label(legend_frame, text="⬤ 仅在数据2中", foreground="#27ae60", **legend_style).pack(side=tk.LEFT, padx=5)
+        ttk.Label(legend_frame, text="⬤ 数据不一致", foreground="#f1c40f", **legend_style).pack(side=tk.LEFT, padx=5)
         
         # 结果展示表格
         self.result_tree = ttk.Treeview(self.result_frame, show="headings")
@@ -143,6 +217,9 @@ class CSVCompareGUI:
         style = ttk.Style()
         style.configure("Treeview", rowheight=25)
         style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
+        # 结果表格斑马纹标签
+        self.result_tree.tag_configure('oddrow', background="#fafafa")
+        self.result_tree.tag_configure('evenrow', background="#f3f4f6")
         
         # 添加滚动条
         y_scrollbar = ttk.Scrollbar(self.result_frame, orient="vertical", command=self.result_tree.yview)
@@ -151,8 +228,14 @@ class CSVCompareGUI:
         
         # 导出按钮和操作区域
         btn_frame = ttk.Frame(self.result_frame)
-        ttk.Button(btn_frame, text="导出Excel", command=self.export_excel).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="复制到剪贴板", command=self.copy_to_clipboard).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame,
+                  text="📊 导出Excel",
+                  style="Action.TButton",
+                  command=self.export_excel).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame,
+                  text="📋 复制到剪贴板",
+                  style="Action.TButton",
+                  command=self.copy_to_clipboard).pack(side=tk.LEFT, padx=5)
         
         # 布局
         self.result_tree.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -186,7 +269,7 @@ class CSVCompareGUI:
         
         # 创建样式
         style = ttk.Style()
-        style.configure("Field.TLabel", font=("Helvetica", 10))
+        style.configure("Field.TLabel", font=("微软雅黑", 11))
         style.configure("Field.TEntry", padding=5)
         
         # 数据1字段
@@ -411,15 +494,16 @@ class CSVCompareGUI:
                     diff_tags.append("diff_values")
                     diff_values += 1
             
-            # 配置标签样式
-            self.result_tree.tag_configure("left_only", background="#ffcdd2")  # 浅红色
-            self.result_tree.tag_configure("right_only", background="#c8e6c9")  # 浅绿色
-            self.result_tree.tag_configure("diff_values", background="#fff9c4")  # 浅黄色
+            # 配置标签样式 - 使用更柔和的颜色
+            self.result_tree.tag_configure("left_only", background="#fbe9e7")  # 更柔和的红色
+            self.result_tree.tag_configure("right_only", background="#e8f5e9")  # 更柔和的绿色
+            self.result_tree.tag_configure("diff_values", background="#fff8e1")  # 更柔和的黄色
             
             # 显示差异行
-            for values, tag in zip(diff_rows, diff_tags):
+            for idx, (values, tag) in enumerate(zip(diff_rows, diff_tags)):
+                zebra_tag = 'oddrow' if idx % 2 == 0 else 'evenrow'
                 item_id = self.result_tree.insert("", tk.END, values=values)
-                self.result_tree.item(item_id, tags=(tag,))
+                self.result_tree.item(item_id, tags=(tag, zebra_tag))
                 
             # 保存差异数据供导出使用
             self.diff_data = list(zip(diff_rows, diff_tags))
@@ -434,6 +518,16 @@ class CSVCompareGUI:
             
         except Exception as e:
             messagebox.showerror("错误", f"比较文件失败: {str(e)}")
+            if hasattr(self, 'diff_count_label'):
+                self.diff_count_label.config(text="差异统计：发生错误，请检查输入文件与映射配置")
+
+    def delete_selected_key_field(self):
+        """删除选中的关键字段"""
+        selection = self.key_listbox.curselection()
+        if not selection:
+            return
+        for index in reversed(selection):
+            self.key_listbox.delete(index)
             
     def has_value_differences(self, row, key_fields):
         """检查非关键字段是否有差异"""
