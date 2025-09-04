@@ -1,0 +1,185 @@
+/* 加载屏幕样式 */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: opacity var(--transition-slow);
+}
+
+.loading-content {
+    text-align: center;
+    color: var(--text-primary);
+    animation: slideInUp 0.8s ease-out;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(0, 212, 255, 0.3);
+    border-top: 3px solid var(--primary-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto var(--spacing-xl);
+    box-shadow: var(--shadow-glow);
+}
+
+.loading-content p {
+    margin: var(--spacing-xl) 0;
+    font-size: 16px;
+    color: var(--text-accent);
+    animation: pulse 2s infinite;
+}
+
+.loading-content .progress-bar {
+    width: 300px;
+    height: 4px;
+    background: var(--bg-item);
+    border-radius: 2px;
+    margin: var(--spacing-xl) auto 0;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.loading-content .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-blue), var(--success));
+    border-radius: 2px;
+    transition: width var(--transition-normal);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    position: relative;
+}
+
+.loading-content .progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+/* 对象详情样式 */
+.object-details {
+    padding: var(--spacing-lg);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    margin-top: 10px;
+    animation: slideInUp 0.3s ease-out;
+}
+
+.object-details h4 {
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.object-details p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: var(--spacing-sm);
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.object-details p:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* 告警列表样式 */
+.alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-height: 140px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    display: flex;
+    gap: 10px;
+    padding: var(--spacing-sm) 10px;
+    background: rgba(255, 100, 100, 0.1);
+    border: 1px solid rgba(255, 100, 100, 0.2);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    transition: var(--transition-normal);
+    animation: slideInLeft 0.3s ease-out;
+}
+
+.alert-item:hover {
+    background: rgba(255, 100, 100, 0.15);
+    border-color: rgba(255, 100, 100, 0.3);
+    transform: translateX(3px);
+}
+
+.alert-time {
+    color: #ff8888;
+    white-space: nowrap;
+    min-width: 120px;
+    font-family: 'Courier New', monospace;
+}
+
+.alert-text {
+    color: #ffcccc;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 运行时图表样式 */
+.runtime-chart {
+    height: 140px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.runtime-chart::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(0, 212, 255, 0.3) 10%,
+        rgba(0, 255, 136, 0.4) 30%,
+        rgba(0, 212, 255, 0.5) 50%,
+        rgba(0, 150, 255, 0.3) 70%,
+        rgba(0, 200, 255, 0.4) 90%,
+        transparent 100%
+    );
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    animation: wave 3s ease-in-out infinite;
+}
+
+/* 人员统计样式 */
+.personnel-stats {
+    display: flex;
+    align-items: center;
+    height: 140px;
+}
+
+.personnel-charts {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}

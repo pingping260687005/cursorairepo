@@ -1,0 +1,165 @@
+/* 面板基础样式 */
+.panel-section {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-normal);
+}
+
+.panel-section:hover {
+    border-color: var(--border-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.section-header,
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-secondary);
+}
+
+.section-header h3,
+.panel-header h3 {
+    color: var(--primary-blue);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* 工作台样式 */
+.workspace-stats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.workspace-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    transition: var(--transition-normal);
+}
+
+.workspace-item:hover {
+    background: rgba(0, 150, 255, 0.15);
+    border-color: var(--border-primary);
+    transform: translateX(5px);
+}
+
+.item-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.item-icon.online {
+    background: linear-gradient(45deg, var(--success), #00cc66);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+}
+
+.item-icon.chart {
+    background: linear-gradient(45deg, var(--primary-blue), var(--primary-blue-dark));
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.item-title {
+    font-size: 14px;
+    color: var(--text-accent);
+}
+
+.item-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-primary);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.mini-chart {
+    height: 20px;
+    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-blue-dark) 50%, var(--primary-blue) 100%);
+    border-radius: 10px;
+    margin-top: var(--spacing-xs);
+    animation: pulse 2s infinite;
+}
+
+/* 管理列表样式 */
+.management-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.management-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-item);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-normal);
+}
+
+.management-item:hover {
+    background: rgba(0, 100, 200, 0.3);
+    transform: translateX(5px);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    animation: blink 2s infinite;
+}
+
+.item-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* 统计图表样式 */
+.park-chart {
+    height: 120px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 100, 200, 0.1) 100%);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.park-chart::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent 0%, rgba(0, 212, 255, 0.1) 50%, transparent 100%),
+        repeating-linear-gradient(90deg, transparent 0px, rgba(0, 212, 255, 0.05) 1px, transparent 2px, transparent 20px);
+}

@@ -1,0 +1,257 @@
+/* 监控数据样式 */
+.monitoring-stats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.stat-group {
+    text-align: center;
+    padding: var(--spacing-md);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    transition: var(--transition-normal);
+}
+
+.stat-group:hover {
+    border-color: var(--border-primary);
+    transform: scale(1.02);
+}
+
+.stat-group .stat-label {
+    font-size: 12px;
+    color: var(--text-accent);
+    margin-bottom: var(--spacing-sm);
+    display: block;
+}
+
+.stat-group .stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary-blue);
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.stat-group .unit {
+    font-size: 12px;
+    color: var(--text-accent);
+    margin-left: var(--spacing-xs);
+}
+
+/* 进度条样式 */
+.progress-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: var(--spacing-lg);
+}
+
+.progress-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.progress-item span:first-child {
+    width: 50px;
+    text-align: left;
+}
+
+.progress-item span:last-child {
+    width: 60px;
+    text-align: right;
+    color: var(--primary-blue);
+    font-weight: 500;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-item);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-blue), var(--success));
+    border-radius: 2px;
+    transition: width var(--transition-normal);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* 设备状态样式 */
+.device-status {
+    text-align: center;
+}
+
+.device-item {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: var(--spacing-lg);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+}
+
+.device-name {
+    font-size: 14px;
+    color: var(--text-accent);
+}
+
+.device-count {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-blue);
+    text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+}
+
+/* 图表项样式 */
+.device-charts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.chart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px var(--spacing-md);
+    background: var(--bg-item);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-normal);
+}
+
+.chart-item:hover {
+    background: rgba(0, 100, 200, 0.3);
+    border-color: var(--border-primary);
+    transform: translateX(3px);
+}
+
+.chart-label {
+    font-size: 12px;
+    color: var(--text-accent);
+}
+
+.chart-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.chart-value .unit {
+    font-size: 10px;
+    color: var(--text-accent);
+    margin-left: var(--spacing-xs);
+}
+
+.chart-change {
+    font-size: 12px;
+    color: var(--success);
+    font-weight: 500;
+}
+
+.chart-change::before {
+    content: '↑';
+    margin-right: 2px;
+}
+
+/* 圆形图表样式 */
+.circular-chart {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary-blue) 0deg 340deg, var(--bg-item) 340deg 360deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: var(--transition-normal);
+}
+
+.circular-chart:hover {
+    transform: scale(1.05);
+}
+
+#chart2 {
+    background: conic-gradient(var(--success) 0deg 310deg, var(--bg-item) 310deg 360deg);
+}
+
+.circular-chart::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.chart-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    position: relative;
+}
+
+.chart-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.chart-label {
+    font-size: 10px;
+    color: var(--text-accent);
+    margin-top: 2px;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.chart-info {
+    text-align: center;
+}
+
+.info-label {
+    font-size: 12px;
+    color: var(--text-accent);
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+.info-value {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
