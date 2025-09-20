@@ -13,9 +13,19 @@ def build_exe():
         '--windowed',  # 使用GUI模式
         '--noconfirm',  # 覆盖现有文件夹
         '--clean',  # 清理临时文件
+        '--onefile',  # 生成单个exe文件
+        '--noconsole',  # 不显示控制台窗口
         f'--add-data={os.path.join(current_dir, "mapping.csv")};.',  # 添加数据文件
         '--hidden-import=pandas',  # 添加需要的包
         '--hidden-import=openpyxl',
+        '--hidden-import=tkinter',
+        '--hidden-import=tkinter.ttk',
+        '--hidden-import=tkinter.filedialog',
+        '--hidden-import=tkinter.messagebox',
+        '--hidden-import=json',
+        '--hidden-import=os',
+        '--hidden-import=pathlib',
+        '--upx-dir=C:\\upx',  # 如果你安装了UPX，可以用来压缩可执行文件（可选）
     ]
     
     # 执行打包
